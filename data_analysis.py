@@ -53,7 +53,16 @@ class TweetsAnalyzer:
 
 class BTCAnalyzer:
     def __init__(self, file_path: str):
-        ...
+        self.data = self.load_data(file_path)
 
-    def load_data(self):
-        ...
+    def load_data(self, file_path: str) -> pd.DataFrame:
+        return pd.read_parquet(file_path)
+
+    def plot_price(self):
+        fig, ax = plt.subplots(figsize=(10, 8))
+        ax.plot(self.data.index, self.data['high'])
+        ax.set_title('BTC Price over time')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Price in $')
+        plt.show()
+
