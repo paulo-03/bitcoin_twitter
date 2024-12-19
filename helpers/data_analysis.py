@@ -8,28 +8,13 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import datetime
+from .classes import BTC, Tweets
 
 
-class TweetsAnalyzer:
+class TweetsAnalyzer(Tweets):
     def __init__(self, file_path: str):
-        self.data = self._load_data_in_chunk(file_path)
+        super().__init__(file_path)
         self._basic_info()
-
-    @staticmethod
-    def _load_data_in_chunk(file_path, chunk_size: int = 1000000) -> pd.DataFrame:
-        """We load data in chunk just to give feedback to the user while loading data since it can be relatively long."""
-        # Initialize an empty DataFrame to collect chunk data
-        df = pd.DataFrame()
-
-        # Read the file in chunks with tqdm to know the progression
-        for chunk in tqdm(pd.read_csv(file_path, compression='zip', delimiter=';',
-                                      chunksize=chunk_size, on_bad_lines='skip', low_memory=False,
-                                      skiprows=0, lineterminator='\n'),
-                          total=int(16889765 / chunk_size),
-                          unit='chunks'):
-            df = pd.concat([df, chunk])  # Append chunk to the DataFrame
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
-        return df.sort_values(by='timestamp', ascending=True).reset_index()
 
     def _basic_info(self):
         """Print basic information at the initialization of the class TweetsAnalyzer"""
@@ -79,15 +64,10 @@ class TweetsAnalyzer:
         plt.show()
 
 
-class BTCAnalyzer:
+class BTCAnalyzer(BTC):
     def __init__(self, file_path: str):
-        self.data = self._load_data(file_path)
-        self.data.index = pd.to_datetime(self.data.index).tz_localize('UTC')  # Make sure the time zone is UTC
+        super().__init__(file_path)
         self._basic_info()
-
-    @staticmethod
-    def _load_data(file_path: str) -> pd.DataFrame:
-        return pd.read_parquet(file_path)
 
     def _basic_info(self):
         """Print basic information at the initialization of the class BTCAnalyzer"""
