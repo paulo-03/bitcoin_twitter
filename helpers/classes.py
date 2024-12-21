@@ -21,7 +21,8 @@ class BTC:
 
 class Tweets:
     def __init__(self, file_path: str):
-        self.data = self._load_data_in_chunk(file_path)
+        self.data = self._load_data_in_chunk(file_path) #TODO, uncomment once everything debugged
+        #self.data = self._load_data_test(file_path)
 
     @staticmethod
     def _load_data_in_chunk(file_path, chunk_size: int = 1000000) -> pd.DataFrame:
@@ -37,4 +38,14 @@ class Tweets:
                           unit='chunks'):
             df = pd.concat([df, chunk])  # Append chunk to the DataFrame
         df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+        df.rename(columns={'text\r': 'text'}, inplace=True)
         return df.sort_values(by='timestamp', ascending=True).reset_index()
+
+    @staticmethod
+    def _load_data_test(file_path):
+        """Only used to try or methods and debug them TODO: delete this"""
+        df = pd.read_csv(file_path, compression='zip', delimiter=';', on_bad_lines='skip',
+                           low_memory=False, lineterminator='\n', skiprows=0, nrows=10000)
+        df.rename(columns={'text\r': 'text'}, inplace=True)
+
+        return df
