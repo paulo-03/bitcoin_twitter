@@ -6,7 +6,6 @@ step to construct the clean data which will populate the created clean_data fold
 import os
 import re
 import torch
-import pandas as pd
 from tqdm import tqdm
 from transformers import pipeline
 
@@ -37,8 +36,8 @@ class BTCProcessing(BTC):
         self.data['returns'] = self.data['close'].pct_change()
 
     def save_clean_data(self):
-        self.data.to_csv(
-            os.path.join(self.clean_folder, 'btc.csv'), index=True
+        self.data.to_parquet(
+            os.path.join(self.clean_folder, 'btc.parquet'), index=True
         )
 
 
@@ -128,8 +127,8 @@ class TweetsProcessing(Tweets):
         unique_lang = self.data['lang'].unique()
 
         # Store the tweets in foreign languages for qualitative assessment
-        self.data[self.data['lang'] != 'en'].to_csv(
-            os.path.join(self.clean_folder, 'foreign_lang_tweets.csv'), index=False
+        self.data[self.data['lang'] != 'en'].to_parquet(
+            os.path.join(self.clean_folder, 'foreign_lang_tweets.parquet'), index=False
         )
 
         # Filter only 'en' tweets
@@ -188,6 +187,6 @@ class TweetsProcessing(Tweets):
               f"(Avg. score: {infos.loc['BEARISH', 'avg_sentiment_score']:.2f})\n")
 
     def save_clean_data(self):
-        self.data.to_csv(
-            os.path.join(self.clean_folder, 'tweeter.csv'), index=False
+        self.data.to_parquet(
+            os.path.join(self.clean_folder, 'twitter.parquet'), index=False
         )

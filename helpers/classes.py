@@ -21,11 +21,13 @@ class BTC:
 
 class Tweets:
     def __init__(self, file_path: str):
-        self.data = self._load_data_in_chunk(file_path) #TODO, uncomment once everything debugged
-        #self.data = self._load_data_test(file_path)
+        if file_path.split('/')[0] == 'data':
+            self.data = self._load_raw_data_in_chunk(file_path)  # TODO, uncomment once everything debugged
+        else:
+            self.data = self._load_clean_data(file_path)
 
     @staticmethod
-    def _load_data_in_chunk(file_path, chunk_size: int = 1000000) -> pd.DataFrame:
+    def _load_raw_data_in_chunk(file_path, chunk_size: int = 1000000) -> pd.DataFrame:
         """We load data in chunk just to give feedback to the user while loading data since it can be relatively long."""
         # Initialize an empty DataFrame to collect chunk data
         df = pd.DataFrame()
@@ -42,10 +44,9 @@ class Tweets:
         return df.sort_values(by='timestamp', ascending=True).reset_index()
 
     @staticmethod
-    def _load_data_test(file_path):
-        """Only used to try or methods and debug them TODO: delete this"""
-        df = pd.read_csv(file_path, compression='zip', delimiter=';', on_bad_lines='skip',
-                           low_memory=False, lineterminator='\n', skiprows=0, nrows=10000)
-        df.rename(columns={'text\r': 'text'}, inplace=True)
+    def _load_clean_data(file_path):
+        """Load the clean data for twitter"""
+        data = pd.read_parquet(file_path)
+        data['timestamp'] = pd.to_datetime(data['timestamp'])  # Convert the 'timestamp' column to datetime
 
-        return df
+        return data

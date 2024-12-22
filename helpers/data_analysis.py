@@ -73,7 +73,7 @@ class BTCAnalyzer(BTC):
         """Print basic information at the initialization of the class BTCAnalyzer"""
         print(f"{'#' * 10} Basic information {'#' * 10}\n"
               f"- Shape of dataset: {self.data.shape}\n"
-              f"- Average time granularity: {self.data.index.to_series().diff().mean()} (~1 min granularity)\n"
+              f"- Average time granularity: {self.data.index.to_series().diff().mean()}\n"
               f"- Data starting from {self.data.index.min()} to {self.data.index.max()}\n"
               f"- Data Types of each column:\n{self.data.dtypes}")
 
@@ -86,7 +86,7 @@ class BTCAnalyzer(BTC):
         filtered_price = self.data[(self.data.index >= start_date) & (self.data.index < end_date)]
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.plot(filtered_price.index, filtered_price['close'])
-        ax.set_title('BTC Price over time')
+        ax.set_title('BTC Closing Price over time')
         ax.set_xlabel('Date')
         ax.set_ylabel('Price in $')
         plt.show()
