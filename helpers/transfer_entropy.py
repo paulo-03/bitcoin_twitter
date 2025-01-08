@@ -5,6 +5,7 @@ and the tweets sentiment classified [Bearish, Neutral, Bullish].
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from pyinform.transferentropy import transfer_entropy
 from scipy.stats import chi2
@@ -60,6 +61,14 @@ class TweetsToBtcTransferEntropy:
 
         plt.figure(figsize=(12, 6))
         sns.lineplot(x=delays, y=transfer_entropy_values, drawstyle='steps-post')
+        #Regression line
+        # sns.regplot(x=delays, y=transfer_entropy_values, scatter=False, color='red', label='Regression Line')
+        #Rolling average
+        sns.lineplot(x=delays, y=pd.Series(transfer_entropy_values).rolling(window=100, center=True).mean(), color='red',
+                     label='30-Value Rolling Average')
+
+        plt.axhline(y=self.transfer_entropy_significance_threshold(), color='pink', linestyle='--')
+
         plt.fill_between(delays, min(transfer_entropy_values), self.transfer_entropy_significance_threshold(),
                          color='pink', alpha=0.3, label='not significant')
 
@@ -90,7 +99,7 @@ def main() -> None:
     tweets_sentiment = np.load('../data/tweets_time_series.npy')
     btc_returns = np.load('../data/btc_time_series.npy')
     te = TweetsToBtcTransferEntropy(tweets_sentiment, btc_returns)
-    te.plot_transfer_entropy_on_lags(delays=list(range(0, 24)), k=1)
+    te.plot_transfer_entropy_on_lags(delays=list(range(0, 2000)), k=1)
 
     #Random test
     # random1 = np.random.randint(0, 3, size=len(btc_returns))
