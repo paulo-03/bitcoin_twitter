@@ -21,15 +21,9 @@ class BTCProcessing(BTC):
 
     def hourly_granularity(self):
         """Transform our minute granularity Bitcoin price evolution to an hourly basis"""
-        self.data = self.data.resample('h').agg({
-            'open': 'first',
-            'high': 'max',
-            'low': 'min',
-            'close': 'last',
-            'volume': 'sum',
-            'quote_asset_volume': 'sum',
-            'number_of_trades': 'sum'
-        }).dropna()
+        self.data = self.data.resample('h').agg({'close': 'last'})
+        # Interpolate missing values
+        self.data['close'] = self.data['close'].interpolate(method='linear')
 
     def compute_returns(self):
         """Simply create a new column and store the return value to know what was the hourly evolution"""
