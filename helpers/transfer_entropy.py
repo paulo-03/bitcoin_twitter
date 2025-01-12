@@ -50,9 +50,10 @@ class TweetsToBtcTransferEntropy:
         """
         return chi2.ppf(1 - alpha, self.df) / (2 * self.length)
 
-    def plot_transfer_entropy_on_lags(self, delays: list = range(1, 200), k: int = 1) -> None:
+    def plot_transfer_entropy_on_lags(self, delays: list = range(1, 200), k: int = 1, moving_average_window: int =0) -> None:
         """
         Plot the transfer entropy values for different delays.
+        :param moving_average_window:
         :param delays: The list of delays to compute the transfer entropy.
         :param k: The history length.
         """
@@ -63,13 +64,14 @@ class TweetsToBtcTransferEntropy:
         sns.lineplot(x=delays, y=transfer_entropy_values, drawstyle='steps-post')
         #Regression line
         # sns.regplot(x=delays, y=transfer_entropy_values, scatter=False, color='red', label='Regression Line')
-        #Rolling average
-        sns.lineplot(x=delays, y=pd.Series(transfer_entropy_values).rolling(window=100, center=True).mean(), color='red',
-                     label='30-Value Rolling Average')
+        #Moving average
+        if moving_average_window > 0:
+            sns.lineplot(x=delays, y=pd.Series(transfer_entropy_values).rolling(window=moving_average_window, center=True).mean(), color='red',
+                     label='Moving Average')
 
         plt.axhline(y=self.transfer_entropy_significance_threshold(), color='pink', linestyle='--')
 
-        plt.fill_between(delays, min(transfer_entropy_values), self.transfer_entropy_significance_threshold(),
+        plt.fill_between(delays, 0, self.transfer_entropy_significance_threshold(),
                          color='pink', alpha=0.3, label='not significant')
 
         plt.xlabel('Time shift [hour]')
