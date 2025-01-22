@@ -55,7 +55,7 @@ class TweetsLabelization(Tweets, Labelization):
         self.data = self.data.loc[START_TIME:END_TIME]
 
     def apply_granularity(self, data: pd.DataFrame, granularity: str = 'h') -> pd.DataFrame:
-        return data.resample(granularity).agg({'weighted_sentiment': 'mean'}).fillna(0)
+        return data.resample(granularity).agg({'mapped_sentiment': 'mean'}).fillna(0)
 
     def labelize(self, threshold: float = 0.33, granularity: str = 'h') -> np.array:
         """
@@ -69,7 +69,7 @@ class TweetsLabelization(Tweets, Labelization):
         data_copy['mapped_sentiment'] = data_copy['sentiment'].map(mapped_sentiment).copy()
         data_copy['weighted_sentiment'] = (data_copy['mapped_sentiment'] * data_copy['sentiment_score']).copy()
         data_copy = self.apply_granularity(data_copy, granularity)
-        data_copy['label'] = data_copy['weighted_sentiment'].apply(lambda x: self.label(x, threshold))
+        data_copy['label'] = data_copy['mapped_sentiment'].apply(lambda x: self.label(x, threshold))
         print(f"{'#' * 10} Tweets Labelization {'#' * 10}")
         self.print_time_series_info(data_copy)
         return data_copy['label'].astype(int).to_numpy()

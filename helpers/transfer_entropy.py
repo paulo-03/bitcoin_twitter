@@ -50,6 +50,15 @@ class TweetsToBtcTransferEntropy:
         """
         return chi2.ppf(1 - alpha, self.df) / (2 * self.length)
 
+    def compute_mean_transfer_entropy(self, delays: list = range(0, 200), k: int = 1) -> float:
+        """
+        Compute the mean transfer entropy value for different delays.
+        :param delays: The list of delays to compute the transfer entropy.
+        :param k: The history length.
+        :return: The mean transfer entropy value.
+        """
+        return float(np.mean([self.compute_transfer_entropy(delay, k) for delay in delays]))
+
     def plot_transfer_entropy_on_lags(self, delays: list = range(0, 200), k: int = 1,
                                       moving_average_window: int = 0) -> None:
         """
@@ -86,7 +95,6 @@ class TweetsToBtcTransferEntropy:
     def plot_transfer_entropy_on_history_lengths(self, ks: list = range(1, 17)) -> None:
         """
         Plot the mean transfer entropy values for different history lengths.
-        :param max_delay: The maximum delay to compute the transfer entropy.
         :param ks: The list of history lengths to compute the transfer entropy.
         """
 
