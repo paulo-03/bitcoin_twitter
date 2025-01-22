@@ -50,24 +50,27 @@ class TweetsToBtcTransferEntropy:
         """
         return chi2.ppf(1 - alpha, self.df) / (2 * self.length)
 
-    def plot_transfer_entropy_on_lags(self, delays: list = range(1, 200), k: int = 1, moving_average_window: int =0) -> None:
+    def plot_transfer_entropy_on_lags(self, delays: list = range(0, 200), k: int = 1,
+                                      moving_average_window: int = 0) -> None:
         """
         Plot the transfer entropy values for different delays.
-        :param moving_average_window:
         :param delays: The list of delays to compute the transfer entropy.
         :param k: The history length.
+        :param moving_average_window: The window size for the moving average.
         """
 
         transfer_entropy_values = [self.compute_transfer_entropy(delay, k) for delay in delays]
 
         plt.figure(figsize=(12, 6))
         sns.lineplot(x=delays, y=transfer_entropy_values, drawstyle='steps-post')
-        #Regression line
+        # Regression line
         # sns.regplot(x=delays, y=transfer_entropy_values, scatter=False, color='red', label='Regression Line')
-        #Moving average
+        # Moving average
         if moving_average_window > 0:
-            sns.lineplot(x=delays, y=pd.Series(transfer_entropy_values).rolling(window=moving_average_window, center=True).mean(), color='red',
-                     label='Moving Average')
+            sns.lineplot(x=delays,
+                         y=pd.Series(transfer_entropy_values).rolling(window=moving_average_window, center=True,
+                                                                      min_periods=1).mean(), color='red',
+                         label='Moving Average')
 
         plt.axhline(y=self.transfer_entropy_significance_threshold(), color='pink', linestyle='--')
 
@@ -96,6 +99,7 @@ class TweetsToBtcTransferEntropy:
         plt.title('Transfer Entropy for Different History Lengths')
         plt.show()
 
+
 def main() -> None:
     # Example
     tweets_sentiment = np.load('../data/tweets_time_series.npy')
@@ -103,7 +107,7 @@ def main() -> None:
     te = TweetsToBtcTransferEntropy(tweets_sentiment, btc_returns)
     te.plot_transfer_entropy_on_lags(delays=list(range(0, 2000)), k=1)
 
-    #Random test
+    # Random test
     # random1 = np.random.randint(0, 3, size=len(btc_returns))
     # random2 = np.random.randint(0, 3, size=len(btc_returns))
     # te_random = TweetsToBtcTransferEntropy(random1, random2)
