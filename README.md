@@ -1,26 +1,30 @@
-# Twitter Influence on Bitcoin Price
+# Tweeting for Bitcoin: Analyzing Price Dynamics through Transfer Entropy
 
-This repository propose our analysis of the influence from twitter posts over the bitcoin price.
+This project explores the dynamic relationship between Twitter sentiment and Bitcoin price movements using **Transfer Entropy (TE)** — a non-parametric and model-free measure capable of capturing non-linear and time-delayed dependencies in financial systems. By analyzing tick-level price data from Binance and sentiment-labeled tweets, this study quantifies the directional flow of information between social media activity and cryptocurrency returns.
 
 ***Authors:*** [Rami Atassi](mailto:rami.atassi@epfl.ch), [Mahmoud Dokmak](mahmoud.dokmak@epfl.ch) & [Paulo Ribeiro](paulo.ribeirodecarvalho@epfl.ch).
 
-## Objective for Bitcoin and Twitter Data Analysis (2017–2019)
+`Bitcoin` · `Twitter` · `Time Series Analysis` · `Symbolic Transfer Entropy`
 
-We propose the following steps for analyzing the correlation between Bitcoin prices and Twitter activity during 2017–2019.  
+## Key Features
+- **Data Sources**:
+  - **Cryptocurrency Prices**: Minute-level Bitcoin price data from Binance.
+  - **Twitter Sentiment**: A dataset of Bitcoin-related tweets analyzed using a specialized financial sentiment classifier.
+- **Preprocessing**:
+  - Cleaning and aligning price and sentiment data at hourly intervals.
+  - Sentiment analysis categorizing tweets as *Bullish*, *Bearish*, or *Neutral* using a fine-tuned NLP model.
+- **Analysis**:
+  - Computation of Transfer Entropy to detect information flow and lead-lag relationships.
+  - Benchmarking the significance of TE through bootstrap statistical tests approximation.
+  - Exploration of optimal time delays for maximal information transfer.
 
-### 1. Bitcoin Price Analysis  
-- **Focus on Returns**: Instead of analyzing the price directly, we will compute Bitcoin returns to identify significant trends and events.  
-- **Highlight Big Events**: Identify key moments, such as major price spikes or drops, within the timeframe.  
+## Results
+The project provides insights into the influence of Twitter sentiment on Bitcoin's price dynamics, highlighting key moments where public sentiment correlates with price fluctuations. The findings are presented through visualizations of lead-lag relationships.
 
-### 2. Twitter Data Analysis  
-- **Define Influential Tweets**: Filter tweets based on defined thresholds (e.g., x likes, replies, or retweets) to focus on medium/highly impactful content.  
-- **Language Filter**: Ensure only English tweets are included, as non-English content (~5-10%) can be considered negligible.  
-- **Analyze Influence**: Highlight accounts with the highest engagement (likes/retweets) for easier representation in the final visualizations.  
+## Future Work
+- Scaling the analysis to include additional cryptocurrencies and social platforms and/or media specialized in cryptocurrencies.
+- Enhancing the robustness of the sentiment classification pipeline.
+- Applying findings to inform algorithmic trading strategies.
 
-### 3. Cross-Analysis Objective  
-- **Correlation Analysis**: Investigate whether:  
-  - Bitcoin price events (returns) trigger Twitter discussions, or  
-  - Influential tweets anticipate significant Bitcoin price changes.  
-- **Effect Duration**: If Twitter is found to influence Bitcoin prices, estimate the duration of this effect.  
-
-The ultimate goal is to determine the direction and strength of this relationship, if any. A sample visualization will illustrate the influence of key accounts and events.  
+---
+Discover the full implementation and results in the repository. A detailed paper about the project is also available for download. Contributions are welcome — feel free to contact us by clicking on our names!

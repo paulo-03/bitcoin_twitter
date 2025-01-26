@@ -21,6 +21,7 @@ class TweetsToBtcTransferEntropy:
     def compute_transfer_entropy(self, delay: int = 0, k: int = 1) -> float:
         """
         Compute the transfer entropy between the two time series with a given delay.
+
         :param delay: The lag between the two time series.
         :param k: The history length.
         :return: The transfer entropy value.
@@ -31,11 +32,13 @@ class TweetsToBtcTransferEntropy:
         else:
             source = self.tweets_sentiment[:-delay]
             target = self.btc_returns[delay:]
+
         return transfer_entropy(source=source, target=target, k=k)
 
     def compute_p_value(self, TE: float, length: int) -> float:
         """
         Compute the p-value of the transfer entropy value being significant (i.e. not due to randomness).
+
         :param TE: A transfer entropy value between the two time series.
         :param length: The length of the time series.
         :return: The p-value.
@@ -46,6 +49,7 @@ class TweetsToBtcTransferEntropy:
     def transfer_entropy_significance_threshold(self, length: int, alpha: float = 0.01) -> float:
         """
         Compute the transfer entropy significance threshold for a given alpha.
+
         :param length: The length of the time series.
         :param alpha: The significance level.
         :return: The transfer entropy significance threshold.
@@ -55,6 +59,7 @@ class TweetsToBtcTransferEntropy:
     def compute_mean_transfer_entropy(self, delays: list = range(0, 200), k: int = 1) -> float:
         """
         Compute the mean transfer entropy value for different delays.
+
         :param delays: The list of delays to compute the transfer entropy.
         :param k: The history length.
         :return: The mean transfer entropy value.
@@ -65,24 +70,28 @@ class TweetsToBtcTransferEntropy:
                                       moving_average_window: int = 0, case: str = "tweet_to_btc_hours") -> None:
         """
         Plot the transfer entropy values for different delays.
+
         :param case: The case to plot the transfer entropy for.
         :param delays: The list of delays to compute the transfer entropy.
         :param k: The history length.
         :param moving_average_window: The window size for the moving average.
         """
-
+        # Compute the Transfer Entropy values for a fix history window, but for few different delays
         transfer_entropy_values = [self.compute_transfer_entropy(delay, k) for delay in delays]
+
+        #Delays will induce length reduction since we truncate time series values that are not in the shifted time series intersection
         time_serie_length = [self.length - delay for delay in delays]
+
+        # Compute the different significance thresholds since time series length evolve, significance threshold too
         significance_thresholds = [self.transfer_entropy_significance_threshold(length) for length in time_serie_length]
 
+        # Plot the results
         plt.figure(figsize=(12, 6))
         sns.lineplot(x=delays, y=transfer_entropy_values, drawstyle='steps-post', label='Transfer Entropy')
         sns.lineplot(x=delays, y=significance_thresholds, color='pink', linestyle='--', label='Significance Threshold')
         plt.fill_between(delays, 0, significance_thresholds, color='pink', alpha=0.3, label='Not Significant')
 
-        # Regression line
-        # sns.regplot(x=delays, y=transfer_entropy_values, scatter=False, color='red', label='Regression Line')
-        # Moving average
+        # Moving average to smooth the TE evolution in function of delays
         if moving_average_window > 0:
             sns.lineplot(x=delays,
                          y=pd.Series(transfer_entropy_values).rolling(window=moving_average_window, center=True,
@@ -93,14 +102,22 @@ class TweetsToBtcTransferEntropy:
             plt.xlabel('Time shift [hour]')
             plt.ylabel('Transfer Entropy [bit]')
             plt.title('Transfer Entropy from Tweets Sentiment to BTC Returns')
+
         elif case == "btc_to_tweet_hours":
             plt.xlabel('Time shift [hour]')
             plt.ylabel('Transfer Entropy [bit]')
             plt.title('Transfer Entropy from BTC Returns to Tweets Sentiment')
+
         elif case == "tweet_to_btc_days":
             plt.xlabel('Time shift [day]')
             plt.ylabel('Transfer Entropy [bit]')
             plt.title('Transfer Entropy from Tweets Sentiment to BTC Returns')
+
+        elif case == "btc_to_tweet_days":
+            plt.xlabel('Time shift [day]')
+            plt.ylabel('Transfer Entropy [bit]')
+            plt.title('Transfer Entropy from BTC Returns to Tweets Sentiment')
+
         plt.legend()
         plt.show()
 
@@ -121,26 +138,26 @@ class TweetsToBtcTransferEntropy:
 
 
 def main() -> None:
-    # Example
+    # Load the data
     tweets_sentiment = np.load('../data/tweets_time_series.npy')
     btc_returns = np.load('../data/btc_time_series.npy')
+
+    # Run our code for a specific case, i.e. history window k=1
     te = TweetsToBtcTransferEntropy(tweets_sentiment, btc_returns)
     te.plot_transfer_entropy_on_lags(delays=list(range(0, 2000)), k=1)
 
-    # Random test
-    # random1 = np.random.randint(0, 3, size=len(btc_returns))
-    # random2 = np.random.randint(0, 3, size=len(btc_returns))
-    # te_random = TweetsToBtcTransferEntropy(random1, random2)
-    # te_random.plot_transfer_entropy_on_lags(delays=list(range(1, 200)))
-
 
 if __name__ == '__main__':
-    random1 = np.random.randint(0, 3, size=18000)
-    random2 = np.random.randint(0, 3, size=18000)
+    # Run the script to easily test our implementation by choosing your testing configuration
+    time_serie_size = 18000
+    random_x = np.random.randint(0, 3, size=time_serie_size)
+    random_y = np.random.randint(0, 3, size=time_serie_size)
+    k = 1
 
-    TE = transfer_entropy(random1, random2, 1)
-    res = 2 * 18000 * TE
-    pvalue = 1 - chi2.cdf(res, 12)
-    print(pvalue)
+    TE = transfer_entropy(source=random_x, target=random_y, k=k)
+    res = 2 * time_serie_size * TE
+    pvalue = 1 - chi2.cdf(res, 12)  # freedom degree is computed following the Professor Challet paper.
 
-    print(TE)
+    print("Transfer Entropy results:\n"
+          f"\t- TE score: {TE}\n"
+          f"\t- P-Value: {pvalue}")

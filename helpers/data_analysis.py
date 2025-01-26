@@ -39,7 +39,6 @@ class TweetsAnalyzer(Tweets):
             axes[idx].set_ylabel('Frequency')
             axes[idx].set_yscale('log')  # Set y-axis to logarithmic scale
 
-        # Adjust layout
         plt.tight_layout()
         plt.show()
 

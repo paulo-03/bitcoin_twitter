@@ -8,7 +8,6 @@ import re
 import torch
 from tqdm import tqdm
 from transformers import pipeline
-
 from .classes import BTC, Tweets
 
 
