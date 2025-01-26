@@ -86,7 +86,7 @@ class TweetsToBtcTransferEntropy:
         significance_thresholds = [self.transfer_entropy_significance_threshold(length) for length in time_serie_length]
 
         # Plot the results
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(8, 4))
         sns.lineplot(x=delays, y=transfer_entropy_values, drawstyle='steps-post', label='Transfer Entropy')
         sns.lineplot(x=delays, y=significance_thresholds, color='pink', linestyle='--', label='Significance Threshold')
         plt.fill_between(delays, 0, significance_thresholds, color='pink', alpha=0.3, label='Not Significant')
@@ -100,25 +100,27 @@ class TweetsToBtcTransferEntropy:
 
         if case == "tweet_to_btc_hours":
             plt.xlabel('Time shift [hour]')
-            plt.ylabel('Transfer Entropy [bit]')
+            plt.ylabel(r"$TE^{T \rightarrow B} [bit]$")
             plt.title('Transfer Entropy from Tweets Sentiment to BTC Returns')
 
         elif case == "btc_to_tweet_hours":
             plt.xlabel('Time shift [hour]')
-            plt.ylabel('Transfer Entropy [bit]')
+            plt.ylabel(r"$TE^{B \rightarrow T} [bit]$")
             plt.title('Transfer Entropy from BTC Returns to Tweets Sentiment')
 
         elif case == "tweet_to_btc_days":
             plt.xlabel('Time shift [day]')
-            plt.ylabel('Transfer Entropy [bit]')
+            plt.ylabel(r"$TE^{T \rightarrow B} [bit]$")
             plt.title('Transfer Entropy from Tweets Sentiment to BTC Returns')
 
         elif case == "btc_to_tweet_days":
             plt.xlabel('Time shift [day]')
-            plt.ylabel('Transfer Entropy [bit]')
+            plt.ylabel(r"$TE^{B \rightarrow T} [bit]$")
             plt.title('Transfer Entropy from BTC Returns to Tweets Sentiment')
 
         plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"{case}.pdf")
         plt.show()
 
     def plot_transfer_entropy_on_history_lengths(self, ks: list = range(1, 17)) -> None:
